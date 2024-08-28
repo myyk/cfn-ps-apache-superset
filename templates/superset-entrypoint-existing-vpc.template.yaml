@@ -143,7 +143,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -282,6 +282,7 @@ Resources:
       Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: DbTaskRole
@@ -516,7 +517,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -600,6 +601,7 @@ Resources:
       Memory: "512"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: RedisTaskRole
@@ -687,7 +689,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       LoadBalancers:
       - ContainerName: superset
         ContainerPort: 8088
@@ -857,6 +859,7 @@ Resources:
       Memory: "16384"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: SupersetTaskRole
@@ -987,7 +990,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1145,6 +1148,7 @@ Resources:
       Memory: "1024"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: SupersetinitTaskRole
@@ -1233,7 +1237,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1368,6 +1372,7 @@ Resources:
       Memory: "8192"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: SupersetnodeTaskRole
@@ -1454,7 +1459,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1591,6 +1596,7 @@ Resources:
       Memory: "16384"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: SupersetworkerTaskRole
@@ -1677,7 +1683,7 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: FARGATE
+      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -1814,6 +1820,7 @@ Resources:
       Memory: "16384"
       NetworkMode: awsvpc
       RequiresCompatibilities:
+      - EC2
       - FARGATE
       TaskRoleArn:
         Ref: SupersetworkerbeatTaskRole
