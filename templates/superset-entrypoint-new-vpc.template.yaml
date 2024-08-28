@@ -15,6 +15,13 @@ Metadata:
           - InstallProphet
           - ClusterName
       - Label:
+          default: "Cluster configuration"
+        Parameters:
+          - InstanceType
+          - DesiredCapacity
+          - MaxSize
+          - ECSAMI
+      - Label:
           default: "Network configuration"
         Parameters:
           - AvailabilityZones
@@ -29,6 +36,9 @@ Metadata:
           - QSS3BucketName
           - QSS3KeyPrefix
           - QSS3BucketRegion
+          - OverrideBucketName
+          - OverrideKeyPrefix
+          - OverrideBucketRegion
     ParameterLabels:
       InstanceType:
         default: "EC2 instance type"
@@ -61,11 +71,17 @@ Metadata:
       PrivateSubnet2CIDR:
         default: "Private subnet for Availability Zone 2"
       QSS3BucketName:
-        default: Quick Start S3 bucket name
+        default: Quick Start S3 bucket name (always used for vpn stack)
       QSS3KeyPrefix:
-        default: Quick Start S3 key prefix
+        default: Quick Start S3 key prefix (always used for vpn stack)
       QSS3BucketRegion:
-        default: Quick Start S3 bucket Region
+        default: Quick Start S3 bucket Region (always used for vpn stack)
+      OverrideBucketName:
+        default: Override S3 bucket name
+      OverrideKeyPrefix:
+        default: Override S3 key prefix
+      OverrideBucketRegion:
+        default: Override S3 bucket Region
 Parameters:
   InstanceType:
     Type: String
@@ -194,6 +210,29 @@ Parameters:
     Description: 'Region where the Quick Start S3 bucket (QSS3BucketName) is
       hosted. When using your own bucket, you must specify this value.'
     Type: String
+  OverrideBucketName:
+    Default: 'databingbong-cloudformation-templates'
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: Override bucket name can include numbers, lowercase letters,
+      uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
+      or end with a hyphen (-).
+    Type: String
+  OverrideKeyPrefix:
+    Default: 'cfn-ps-apache-superset/'
+    AllowedPattern: ^[0-9a-zA-Z-/.]*$
+    ConstraintDescription: Override key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), periods (.) and forward slashes (/).
+    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-), periods (.) and
+      forward slashes (/).
+    Type: String
+  OverrideBucketRegion:
+    Default: 'us-east-1'
+    Description: 'Region where the Quick Start S3 bucket (QSS3BucketName) is
+      hosted. When using your own bucket, you must specify this value.'
+    Type: String
 Conditions:
   UsingDefaultBucket: !Equals [ !Ref QSS3BucketName, 'aws-ia' ]
 Resources:
@@ -218,8 +257,8 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ecs-ec2-cluster.template.yaml'
-        - S3Region: !If [ UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion ]
-          S3Bucket: !If [ UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName ]
+        - S3Region: !Ref OverrideBucketRegion
+          S3Bucket: !Ref OverrideBucketName
       Parameters:
         InstanceType: !Ref 'InstanceType'
         DesiredCapacity: !Ref 'DesiredCapacity'
@@ -231,14 +270,13 @@ Resources:
           - Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
           - Fn::GetAtt: [Vpc, Outputs.PublicSubnet2ID]
         ClusterName: !Ref 'ClusterName'
-        
   Superset:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub
         - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/superset-new-vpc-workload.template.yaml'
-        - S3Region: !If [ UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion ]
-          S3Bucket: !If [ UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName ]
+        - S3Region: !Ref OverrideBucketRegion
+          S3Bucket: !Ref OverrideBucketName
       Parameters:
         UserName: !Ref 'SuperSetUserName'
         UserPassword: !Ref 'SuperSetUserPassword'
