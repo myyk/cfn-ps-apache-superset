@@ -13,7 +13,6 @@ Metadata:
           - SuperSetUserPassword
           - WithExample
           - InstallProphet
-          - ClusterName
       - Label:
           default: "Cluster configuration"
         Parameters:
@@ -56,8 +55,6 @@ Metadata:
         default: "Populate example dashboard"
       InstallProphet:
         default: "Install Prophet library"
-      ClusterName:
-        default: "Elastic container cluster name"
       AvailabilityZones:
         default: "Availability Zones"
       VPCCIDR:
@@ -86,7 +83,7 @@ Parameters:
   InstanceType:
     Type: String
     Description: EC2 instance type
-    Default: "t3.medium"
+    Default: "t3.large"
     AllowedValues:
       - t2.2xlarge
       - t2.large
@@ -111,11 +108,11 @@ Parameters:
       - t3a.xlarge
   DesiredCapacity:
     Type: Number
-    Default: "0"
+    Default: 0
     Description: Number of EC2 instances to launch in your ECS cluster.
   MaxSize:
     Type: Number
-    Default: "100"
+    Default: 100
     Description: Maximum number of EC2 instances that can be launched in your ECS cluster.
   ECSAMI:
     Description: The Amazon Machine Image ID used for the cluster
@@ -139,16 +136,12 @@ Parameters:
     Type: String
   WithExample:
     Type: String
-    Default: "no"
+    Default: "yes"
     Description: 'Enables or disables populating the dashboard example. Setting this parameter to "yes" populates the dashboard example.'
   InstallProphet:
     Type: String
-    Default: "no"
+    Default: "yes"
     Description: 'Enables or disables Prophet library installation for Forecasting Analytics. Setting this parameter to "yes" installs Prophet to enable Forecasting Analytics.'
-  ClusterName:
-    Type: String
-    Default: 'supersetOnAWS'
-    Description: Name of the Amazon ECS cluster.
   AvailabilityZones:
     Description: 'List of Availability Zones to use for the VPC subnets.'
     Type: List<AWS::EC2::AvailabilityZone::Name>
@@ -269,7 +262,8 @@ Resources:
         SubnetIds:
           - Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
           - Fn::GetAtt: [Vpc, Outputs.PublicSubnet2ID]
-        ClusterName: !Ref 'ClusterName'
+          - Fn::GetAtt: [Vpc, Outputs.PrivateSubnet1AID]
+          - Fn::GetAtt: [Vpc, Outputs.PrivateSubnet2AID]
   Superset:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -282,7 +276,8 @@ Resources:
         UserPassword: !Ref 'SuperSetUserPassword'
         WithExample: !Ref 'WithExample'
         InstallProphet: !Ref 'InstallProphet'
-        ClusterName: !Ref 'ClusterName'
+        ClusterName:
+          Fn::GetAtt: [Cluster, Outputs.ClusterName]
         PublicSubnet1ID:
           Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
         PublicSubnet2ID:

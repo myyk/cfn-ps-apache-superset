@@ -6,7 +6,7 @@ Parameters:
   InstanceType:
     Type: String
     Description: EC2 instance type
-    Default: "t3.large"
+    Default: "t3.medium"
     AllowedValues:
       - t2.2xlarge
       - t2.large
@@ -49,10 +49,7 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
     Description: List of subnet IDs where the EC2 instances will be launched
     Default: "subnet-021345abcdef67890"
-  ClusterName:
-    Type: String
-    Default: 'supersetOnAWS'
-    Description: Name of the Amazon ECS cluster.
+
 Resources:
   # This is authorizes ECS to manage resources on your
   # account on your behalf. This role is likely already created on your account
@@ -66,7 +63,7 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterSettings:
-        - Name: !Ref ClusterName
+        - Name: containerInsights
           Value: enabled
   
   # Autoscaling group. This launches the actual EC2 instances that will register
@@ -111,7 +108,7 @@ Resources:
       # knows which ECS cluster on your AWS account it should be joining
         UserData:
           Fn::Base64: !Sub |
-            #!/bin/bash -xe
+           #!/bin/bash -xe
             echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
             yum install -y aws-cfn-bootstrap
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource ContainerInstances --configsets full_install --region ${AWS::Region} &
