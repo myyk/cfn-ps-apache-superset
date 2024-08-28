@@ -46,7 +46,7 @@ Parameters:
     Description: VPC ID where the ECS cluster is launched
     Default: vpc-1234567890abcdef0
   SubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
+    Type: CommaDelimitedList
     Description: List of subnet IDs where the EC2 instances will be launched
     Default: "subnet-021345abcdef67890"
 

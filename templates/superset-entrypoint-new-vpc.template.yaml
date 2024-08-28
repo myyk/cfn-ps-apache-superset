@@ -259,11 +259,12 @@ Resources:
         ECSAMI: !Ref 'ECSAMI'
         VpcId:
           Fn::GetAtt: [Vpc, Outputs.VPCID]
-        SubnetIds:
-          - Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
-          - Fn::GetAtt: [Vpc, Outputs.PublicSubnet2ID]
-          - Fn::GetAtt: [Vpc, Outputs.PrivateSubnet1AID]
-          - Fn::GetAtt: [Vpc, Outputs.PrivateSubnet2AID]
+        SubnetIds: !Join # Fixes issue with passing parameters in nested stacks https://repost.aws/knowledge-center/cloudformation-parameters-nested-stacks
+          - ','
+          - - !GetAtt Vpc.Outputs.PublicSubnet1ID
+            - !GetAtt Vpc.Outputs.PublicSubnet2ID
+            - !GetAtt Vpc.Outputs.PrivateSubnet1AID
+            - !GetAtt Vpc.Outputs.PrivateSubnet2AID
   Superset:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
