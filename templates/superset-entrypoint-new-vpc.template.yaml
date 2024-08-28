@@ -30,6 +30,14 @@ Metadata:
           - QSS3KeyPrefix
           - QSS3BucketRegion
     ParameterLabels:
+      InstanceType:
+        default: "EC2 instance type"
+      DesiredCapacity:
+        default: "Number of EC2 instances to launch in your ECS cluster"
+      MaxSize:
+        default: "Maximum number of EC2 instances that can be launched in your ECS cluster"
+      ECSAMI:
+        default: "The Amazon Machine Image ID used for the cluster"
       SuperSetUserName:
         default: "Initial Superset user name"
       SuperSetUserPassword:
@@ -59,6 +67,44 @@ Metadata:
       QSS3BucketRegion:
         default: Quick Start S3 bucket Region
 Parameters:
+  InstanceType:
+    Type: String
+    Description: EC2 instance type
+    Default: "t3.medium"
+    AllowedValues:
+      - t2.2xlarge
+      - t2.large
+      - t2.medium
+      - t2.micro
+      - t2.nano
+      - t2.small
+      - t2.xlarge
+      - t3.2xlarge
+      - t3.large
+      - t3.medium
+      - t3.micro
+      - t3.nano
+      - t3.small
+      - t3.xlarge
+      - t3a.2xlarge
+      - t3a.large
+      - t3a.medium
+      - t3a.micro
+      - t3a.nano
+      - t3a.small
+      - t3a.xlarge
+  DesiredCapacity:
+    Type: Number
+    Default: "0"
+    Description: Number of EC2 instances to launch in your ECS cluster.
+  MaxSize:
+    Type: Number
+    Default: "100"
+    Description: Maximum number of EC2 instances that can be launched in your ECS cluster.
+  ECSAMI:
+    Description: The Amazon Machine Image ID used for the cluster
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id
   SuperSetUserName:
     Type: String
     Description: Superset user name.
@@ -167,6 +213,25 @@ Resources:
         PrivateSubnet1ACIDR: !Ref 'PrivateSubnet1CIDR'
         PrivateSubnet2ACIDR: !Ref 'PrivateSubnet2CIDR'
         VPCCIDR: !Ref VPCCIDR
+  Cluster:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ecs-ec2-cluster.template.yaml'
+        - S3Region: !If [ UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion ]
+          S3Bucket: !If [ UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName ]
+      Parameters:
+        InstanceType: !Ref 'InstanceType'
+        DesiredCapacity: !Ref 'DesiredCapacity'
+        MaxSize: !Ref 'MaxSize'
+        ECSAMI: !Ref 'ECSAMI'
+        VpcId:
+          Fn::GetAtt: [Vpc, Outputs.VPCID]
+        SubnetIds:
+          - Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
+          - Fn::GetAtt: [Vpc, Outputs.PublicSubnet2ID]
+        ClusterName: !Ref 'ClusterName'
+        
   Superset:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
