@@ -204,11 +204,11 @@ Resources:
 Outputs:
   ClusterName:
     Description: The ECS cluster into which to launch resources
-    Value: ECSCluster
+    Value: !GetAtt ECSCluster.ClusterName
   ECSTaskExecutionRole:
     Description: The role used to start up a task
-    Value: ECSTaskExecutionRole
+    Value: !Ref ECSTaskExecutionRole
   CapacityProvider:
     Description: The cluster capacity provider that the service should use to
       request capacity when it wants to start up a task
-    Value: CapacityProvider
+    Value: !Ref CapacityProvider

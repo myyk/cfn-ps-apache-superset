@@ -112,13 +112,6 @@ Resources:
       Name: !Sub ${ClusterName}.local
       Vpc: !Ref VpcID
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-  Cluster:
-    Properties:
-      ClusterName: !Ref ClusterName
-      Tags:
-      - Key: com.docker.compose.project
-        Value: !Ref ClusterName
-    Type: AWS::ECS::Cluster
   Default5432Ingress:
     Properties:
       CidrIp: 0.0.0.0/0
@@ -194,10 +187,7 @@ Resources:
     - DbhomeNFSMountTargetOnSubnetB
     - DbhomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -207,7 +197,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -498,10 +488,7 @@ Resources:
     - RedisNFSMountTargetOnSubnetB
     - RedisNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -511,7 +498,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -670,10 +657,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -688,7 +672,7 @@ Resources:
           Ref: SupersetTCP8088TargetGroup
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -969,10 +953,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       ServiceName: "supersetInitService"
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -983,7 +964,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -1216,10 +1197,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1229,7 +1207,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -1437,10 +1415,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1450,7 +1425,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -1663,10 +1638,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster:
-        Fn::GetAtt:
-        - Cluster
-        - Arn
+      Cluster: !Ref ClusterName
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1676,7 +1648,7 @@ Resources:
       LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          #AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
@@ -1899,9 +1871,7 @@ Resources:
           - !GetAtt 
             - SupersetworkerbeatService
             - Name
-          - '", "ClusterName", "'
-          - !Ref Cluster
-          - '", { "stat": "Average" } ],[ "...", "'
+          - '", "ClusterName", ".", { "stat": "Average" } ],[ "...", "'
           - !GetAtt 
             - SupersetworkerService
             - Name
@@ -1952,9 +1922,7 @@ Resources:
           - !GetAtt 
             - SupersetworkerService
             - Name
-          - '", "ClusterName", "'
-          - !Ref Cluster
-          - '" ],[ "...", "'
+          - '", "ClusterName", "." ],[ "...", "'
           - !GetAtt 
             - SupersetworkerbeatService
             - Name
@@ -2000,7 +1968,6 @@ Resources:
             - SupersetworkerService
             - Name
           - '", "ClusterName", "'
-          - !Ref Cluster
           - >-
             ", { "stat": "SampleCount", "yAxis": "left", "period": 60 } ],[
             "...", "
