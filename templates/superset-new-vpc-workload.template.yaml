@@ -213,7 +213,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -518,7 +517,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -696,7 +694,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -846,10 +843,10 @@ Resources:
           HostPort: 8088
           Protocol: tcp
         User: root
-      Cpu: "4096"
+      Cpu: "2 vCPU"
       ExecutionRoleArn: !GetAtt SupersetTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset
-      Memory: "16384"
+      Memory: "6 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -992,7 +989,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -1239,7 +1235,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -1359,10 +1354,10 @@ Resources:
         - ContainerPath: /app/superset_home
           SourceVolume: superset_home
         Name: superset-node
-      Cpu: "4096"
+      Cpu: "1 vCPU"
       ExecutionRoleArn: !GetAtt SupersetnodeTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-node
-      Memory: "8192"
+      Memory: "6 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -1461,7 +1456,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -1583,10 +1577,10 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker
         User: root
-      Cpu: "4096"
+      Cpu: "1 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker
-      Memory: "16384"
+      Memory: "6 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -1688,7 +1682,6 @@ Resources:
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
-      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -1810,10 +1803,10 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker-beat
         User: root
-      Cpu: "4096"
+      Cpu: "1 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerbeatTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker-beat
-      Memory: "16384"
+      Memory: "6 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
