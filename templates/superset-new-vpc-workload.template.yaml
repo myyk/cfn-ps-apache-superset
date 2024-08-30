@@ -79,6 +79,9 @@ Parameters:
     Default: 'supersetOnAWS'
     Description: Name of the Amazon ECS cluster.
     Type: String
+  ECSClusterArn:
+    Type: String
+    Description: ECS cluster arn for the Docker compose project.
 Resources:
   SupersetSecretKey:
       Type: 'AWS::SecretsManager::Secret'
@@ -187,7 +190,7 @@ Resources:
     - DbhomeNFSMountTargetOnSubnetB
     - DbhomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -488,7 +491,7 @@ Resources:
     - RedisNFSMountTargetOnSubnetB
     - RedisNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -657,7 +660,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -953,7 +956,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       ServiceName: "supersetInitService"
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -1197,7 +1200,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1415,7 +1418,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1638,7 +1641,7 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetB
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref ECSClusterArn
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100

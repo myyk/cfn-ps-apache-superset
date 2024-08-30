@@ -72,7 +72,7 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
       # This is to ensure that the ASG gets deleted first before these
-    # resources, when it comes to stack teardown.
+      # resources, when it comes to stack teardown.
       - ECSCluster
       - EC2Role
     Properties:
@@ -105,7 +105,7 @@ Resources:
         SecurityGroupIds:
           - !Ref ContainerHostSecurityGroup
         # This injected configuration file is how the EC2 instance
-      # knows which ECS cluster on your AWS account it should be joining
+        # knows which ECS cluster on your AWS account it should be joining
         UserData:
           Fn::Base64: !Sub |
            #!/bin/bash -xe
@@ -137,7 +137,7 @@ Resources:
           # Percentage of cluster reservation to try to maintain
           TargetCapacity: 100
         ManagedTerminationProtection: ENABLED
-   # Create a cluster capacity provider assocation so that the cluster
+  # Create a cluster capacity provider assocation so that the cluster
   # will use the capacity provider
   CapacityProviderAssociation:
     Type: AWS::ECS::ClusterCapacityProviderAssociations
@@ -198,17 +198,23 @@ Resources:
                 aws:SourceAccount: AWS::AccountId
       Path: /
       # This role enables all features of ECS. See reference:
-    # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam-awsmanpol.html#security-iam-awsmanpol-AmazonECSTaskExecutionRolePolicy
+      # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam-awsmanpol.html#security-iam-awsmanpol-AmazonECSTaskExecutionRolePolicy
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
 Outputs:
-  ClusterName:
+  ClusterArn:
     Description: The ECS cluster into which to launch resources
-    Value: !GetAtt ECSCluster.ClusterName
+    Value: !GetAtt ECSCluster.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-Cluster'
   ECSTaskExecutionRole:
     Description: The role used to start up a task
     Value: !Ref ECSTaskExecutionRole
+    Export:
+      Name: !Sub '${AWS::StackName}-ECSTaskExecutionRole'
   CapacityProvider:
     Description: The cluster capacity provider that the service should use to
       request capacity when it wants to start up a task
     Value: !Ref CapacityProvider
+    Export:
+      Name: !Sub '${AWS::StackName}-CapacityProvider'

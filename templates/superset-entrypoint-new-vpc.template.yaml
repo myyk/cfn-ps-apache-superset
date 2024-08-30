@@ -278,7 +278,9 @@ Resources:
         WithExample: !Ref 'WithExample'
         InstallProphet: !Ref 'InstallProphet'
         ClusterName:
-          Fn::GetAtt: [Cluster, Outputs.ClusterName]
+          'supersetOnAws' #TODO: parameterize this again, copy from original
+        ECSClusterArn:
+          Fn::GetAtt: [Cluster, Outputs.ClusterArn]
         PublicSubnet1ID:
           Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
         PublicSubnet2ID:
