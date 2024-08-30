@@ -44,6 +44,8 @@ Metadata:
         default: "Private subnet for Availability Zone 2"
       ClusterName:
         default: "Amazon ECS cluster name"
+      ECSClusterArn:
+        default: "ECS cluster arn for the Docker compose project"
 Parameters:
   UserName:
     Type: String
@@ -191,6 +193,9 @@ Resources:
     - DbhomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -492,6 +497,9 @@ Resources:
     - RedisNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -661,6 +669,9 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -957,6 +968,9 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       ServiceName: "supersetInitService"
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -1201,6 +1215,9 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1419,6 +1436,9 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
@@ -1642,6 +1662,9 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      PlacementStrategies:
+        - Field: memory
+          Type: binpack
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
