@@ -334,10 +334,10 @@ Resources:
         - ContainerPort: 5432
           HostPort: 5432
           Protocol: tcp
-      Cpu: "256"
+      Cpu: "0.25 vCPU"
       ExecutionRoleArn: !GetAtt DbTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-db
-      Memory: "512"
+      Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -583,10 +583,10 @@ Resources:
         - ContainerPort: 6379
           HostPort: 6379
           Protocol: tcp
-      Cpu: "256"
+      Cpu: "0.25 vCPU"
       ExecutionRoleArn: !GetAtt RedisTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-redis
-      Memory: "512"
+      Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -968,9 +968,6 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
-      PlacementStrategies:
-        - Field: memory
-          Type: binpack
       ServiceName: "supersetInitService"
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -978,15 +975,16 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
+      LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
-          #AssignPublicIp: ENABLED
+          AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: DefaultNetwork
           Subnets:
           - !Ref PrivateSubnet1AID
           - !Ref PrivateSubnet2AID
+      PlatformVersion: 1.4.0
       PropagateTags: SERVICE
       SchedulingStrategy: REPLICA
       ServiceRegistries:
@@ -1129,10 +1127,10 @@ Resources:
               Ref: AWS::Region
             awslogs-stream-prefix: !Ref ClusterName
         Name: superset-init-cleanup
-      Cpu: "512"
+      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetinitTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-init
-      Memory: "1024"
+      Memory: "1 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -1352,10 +1350,10 @@ Resources:
         - ContainerPath: /app/superset_home
           SourceVolume: superset_home
         Name: superset-node
-      Cpu: "1 vCPU"
+      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetnodeTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-node
-      Memory: "6 GB"
+      Memory: "2 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -1575,10 +1573,10 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker
         User: root
-      Cpu: "1 vCPU"
+      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker
-      Memory: "6 GB"
+      Memory: "2 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
@@ -1801,10 +1799,10 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker-beat
         User: root
-      Cpu: "1 vCPU"
+      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerbeatTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker-beat
-      Memory: "6 GB"
+      Memory: "2 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2

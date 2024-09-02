@@ -29,6 +29,7 @@ Parameters:
       - t3a.nano
       - t3a.small
       - t3a.xlarge
+      - m6a.xlarge
   DesiredCapacity:
     Type: Number
     Default: 0
