@@ -1108,7 +1108,7 @@ Resources:
         - ecs
         - update-service
         - --cluster
-        - !Ref ClusterName
+        - !Ref ECSClusterArn
         - --service
         - supersetInitService
         - --desired-count
