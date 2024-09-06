@@ -96,7 +96,7 @@ Resources:
   ContainerInstances:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: !Join [ "", [ {"Ref": "AWS::StackName"}, "-asg-launch-template-small" ]]
+      LaunchTemplateName: !Join [ "", [ {"Ref": "AWS::StackName"}, "-asg-launch-template" ]]
       LaunchTemplateData:
         ImageId:
           Ref: ECSAMI
