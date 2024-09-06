@@ -30,6 +30,7 @@ Parameters:
       - t3a.small
       - t3a.xlarge
       - m6a.xlarge
+      - m6g.xlarge
   DesiredCapacity:
     Type: Number
     Default: 0
@@ -95,7 +96,7 @@ Resources:
   ContainerInstances:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: "asg-launch-template"
+      LaunchTemplateName: !Join [ "", [ {"Ref": "AWS::StackName"}, "-asg-launch-template-small" ]]
       LaunchTemplateData:
         ImageId:
           Ref: ECSAMI
@@ -254,6 +255,11 @@ Resources:
       GroupDescription: Access to the EC2 hosts that run containers
       VpcId:
         Ref: VpcId
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 18.206.107.24/29  # This allows access from EC2 Instance Connect to the EC2 instances in my region
   # Role for the EC2 hosts. This allows the ECS agent on the EC2 hosts
   # to communciate with the ECS control plane, as well as download the docker
   # images from ECR to run on your host.

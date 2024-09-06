@@ -107,6 +107,7 @@ Parameters:
       - t3a.small
       - t3a.xlarge
       - m6a.xlarge
+      - m6g.xlarge
   DesiredCapacity:
     Type: Number
     Default: 1
@@ -146,6 +147,7 @@ Parameters:
   AvailabilityZones:
     Description: 'List of Availability Zones to use for the VPC subnets.'
     Type: List<AWS::EC2::AvailabilityZone::Name>
+    Default: "us-east-1c,us-east-1d"
   VPCCIDR:
     Type: String
     Default: 192.168.0.0/16
