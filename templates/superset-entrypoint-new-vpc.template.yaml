@@ -83,7 +83,7 @@ Parameters:
   InstanceType:
     Type: String
     Description: EC2 instance type
-    Default: "m6a.xlarge"
+    Default: "t3a.medium"
     AllowedValues:
       - t2.2xlarge
       - t2.large
@@ -109,7 +109,7 @@ Parameters:
       - m6a.xlarge
   DesiredCapacity:
     Type: Number
-    Default: 1
+    Default: 0
     Description: Number of EC2 instances to launch in your ECS cluster.
   MaxSize:
     Type: Number
@@ -282,6 +282,10 @@ Resources:
           'supersetOnAws' #TODO: parameterize this again, copy from original
         ECSClusterArn:
           Fn::GetAtt: [Cluster, Outputs.ClusterArn]
+        CapacityProviderLarge:
+          Fn::GetAtt: [Cluster, Outputs.CapacityProvider]
+        CapacityProviderSmall:
+          Fn::GetAtt: [Cluster, Outputs.CapacityProviderSmall]
         PublicSubnet1ID:
           Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
         PublicSubnet2ID:

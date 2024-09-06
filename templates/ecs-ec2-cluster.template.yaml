@@ -30,6 +30,33 @@ Parameters:
       - t3a.small
       - t3a.xlarge
       - m6a.xlarge
+  InstanceTypeSmall:
+    Type: String
+    Description: EC2 instance type
+    Default: "t3.micro"
+    AllowedValues:
+      - t2.2xlarge
+      - t2.large
+      - t2.medium
+      - t2.micro
+      - t2.nano
+      - t2.small
+      - t2.xlarge
+      - t3.2xlarge
+      - t3.large
+      - t3.medium
+      - t3.micro
+      - t3.nano
+      - t3.small
+      - t3.xlarge
+      - t3a.2xlarge
+      - t3a.large
+      - t3a.medium
+      - t3a.micro
+      - t3a.nano
+      - t3a.small
+      - t3a.xlarge
+      - m6a.xlarge
   DesiredCapacity:
     Type: Number
     Default: 0
@@ -91,11 +118,33 @@ Resources:
     UpdatePolicy:
       AutoScalingReplacingUpdate:
         WillReplace: "true"
+  ECSAutoScalingGroupSmall:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    DependsOn:
+      # This is to ensure that the ASG gets deleted first before these
+      # resources, when it comes to stack teardown.
+      - ECSCluster
+      - EC2Role
+    Properties:
+      VPCZoneIdentifier:
+        Ref: SubnetIds
+      LaunchTemplate:
+        LaunchTemplateId: !Ref ContainerInstancesSmall
+        Version: !GetAtt ContainerInstancesSmall.LatestVersionNumber
+      MinSize: 0
+      MaxSize:
+        Ref: MaxSize
+      DesiredCapacity:
+        Ref: DesiredCapacity
+      NewInstancesProtectedFromScaleIn: true
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: "true"
   # The config for each instance that is added to the cluster
   ContainerInstances:
     Type: AWS::EC2::LaunchTemplate
     Properties:
-      LaunchTemplateName: "asg-launch-template"
+      LaunchTemplateName: !Join [ "", [ {"Ref": "AWS::StackName"}, "-asg-launch-template" ]]
       LaunchTemplateData:
         ImageId:
           Ref: ECSAMI
@@ -113,6 +162,33 @@ Resources:
             echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
             yum install -y aws-cfn-bootstrap
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource ContainerInstances --configsets full_install --region ${AWS::Region} &
+         # Disable IMDSv1, and require IMDSv2
+        MetadataOptions:
+          HttpEndpoint: enabled
+          HttpTokens: required
+        PrivateDnsNameOptions:
+          EnableResourceNameDnsARecord: false # Required to be false with awsvpnTrunking
+  ContainerInstancesSmall:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Join [ "", [ {"Ref": "AWS::StackName"}, "-asg-launch-template-small" ]]
+      LaunchTemplateData:
+        ImageId:
+          Ref: ECSAMI
+        InstanceType:
+          Ref: InstanceTypeSmall
+        IamInstanceProfile:
+          Name: !Ref EC2InstanceProfile
+        SecurityGroupIds:
+          - !Ref ContainerHostSecurityGroup
+        # This injected configuration file is how the EC2 instance
+        # knows which ECS cluster on your AWS account it should be joining
+        UserData:
+          Fn::Base64: !Sub |
+           #!/bin/bash -xe
+            echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+            yum install -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource ContainerInstancesSmall --configsets full_install --region ${AWS::Region} &
          # Disable IMDSv1, and require IMDSv2
         MetadataOptions:
           HttpEndpoint: enabled
@@ -140,6 +216,19 @@ Resources:
           # Percentage of cluster reservation to try to maintain
           TargetCapacity: 100
         ManagedTerminationProtection: ENABLED
+  CapacityProviderSmall:
+    Type: AWS::ECS::CapacityProvider
+    Properties:
+      AutoScalingGroupProvider:
+        AutoScalingGroupArn: !Ref ECSAutoScalingGroupSmall
+        ManagedScaling:
+          InstanceWarmupPeriod: 60
+          MinimumScalingStepSize: 1
+          MaximumScalingStepSize: 100
+          Status: ENABLED
+          # Percentage of cluster reservation to try to maintain
+          TargetCapacity: 100
+        ManagedTerminationProtection: ENABLED
   # Create a cluster capacity provider assocation so that the cluster
   # will use the capacity provider
   CapacityProviderAssociation:
@@ -147,11 +236,13 @@ Resources:
     Properties:
       CapacityProviders:
         - !Ref CapacityProvider
+        - !Ref CapacityProviderSmall
       Cluster: !Ref ECSCluster
       DefaultCapacityProviderStrategy:
         - Base: 0
+          CapacityProvider: !Ref CapacityProviderSmall
+        - Base: 0
           CapacityProvider: !Ref CapacityProvider
-          Weight: 1
 
   # From: https://containersonaws.com/pattern/cloudformation-turn-on-ecs-eni-trunking
   # Turn on ENI trunking for the EC2 instances. This setting is not on by default,
@@ -254,6 +345,11 @@ Resources:
       GroupDescription: Access to the EC2 hosts that run containers
       VpcId:
         Ref: VpcId
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 18.206.107.24/29  # This allows access from EC2 Instance Connect to the EC2 instances in my region
   # Role for the EC2 hosts. This allows the ECS agent on the EC2 hosts
   # to communciate with the ECS control plane, as well as download the docker
   # images from ECR to run on your host.
@@ -341,3 +437,9 @@ Outputs:
     Value: !Ref CapacityProvider
     Export:
       Name: !Sub '${AWS::StackName}-CapacityProvider'
+  CapacityProviderSmall:
+    Description: The cluster capacity provider that the service should use to
+      request capacity when it wants to start up a small task
+    Value: !Ref CapacityProviderSmall
+    Export:
+      Name: !Sub '${AWS::StackName}-CapacityProviderSmall'

@@ -84,6 +84,12 @@ Parameters:
   ECSClusterArn:
     Type: String
     Description: ECS cluster arn for the Docker compose project.
+  CapacityProviderLarge:
+    Type: String
+    Description: Capacity provider for large tasks on the ECS cluster.
+  CapacityProviderSmall:
+    Type: String
+    Description: Capacity provider for small tasks on the ECS cluster.
 Resources:
   SupersetSecretKey:
       Type: 'AWS::SecretsManager::Secret'
@@ -193,6 +199,10 @@ Resources:
     - DbhomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderSmall
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -202,7 +212,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           #AssignPublicIp: ENABLED
@@ -334,14 +343,12 @@ Resources:
         - ContainerPort: 5432
           HostPort: 5432
           Protocol: tcp
-      Cpu: "0.25 vCPU"
       ExecutionRoleArn: !GetAtt DbTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-db
       Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: DbTaskRole
       Volumes:
@@ -497,6 +504,10 @@ Resources:
     - RedisNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderSmall
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -506,7 +517,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           #AssignPublicIp: ENABLED
@@ -583,14 +593,12 @@ Resources:
         - ContainerPort: 6379
           HostPort: 6379
           Protocol: tcp
-      Cpu: "0.25 vCPU"
       ExecutionRoleArn: !GetAtt RedisTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-redis
       Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: RedisTaskRole
       Volumes:
@@ -669,6 +677,10 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderLarge
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -678,7 +690,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       LoadBalancers:
       - ContainerName: superset
         ContainerPort: 8088
@@ -841,14 +852,12 @@ Resources:
           HostPort: 8088
           Protocol: tcp
         User: root
-      Cpu: "2 vCPU"
       ExecutionRoleArn: !GetAtt SupersetTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset
-      Memory: "6 GB"
+      Memory: "3 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: SupersetTaskRole
       Volumes:
@@ -1213,6 +1222,10 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderSmall
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -1222,7 +1235,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           #AssignPublicIp: ENABLED
@@ -1350,14 +1362,12 @@ Resources:
         - ContainerPath: /app/superset_home
           SourceVolume: superset_home
         Name: superset-node
-      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetnodeTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-node
-      Memory: "2 GB"
+      Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: SupersetnodeTaskRole
       Volumes:
@@ -1434,6 +1444,10 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderSmall
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -1443,7 +1457,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           #AssignPublicIp: ENABLED
@@ -1573,14 +1586,12 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker
         User: root
-      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker
-      Memory: "2 GB"
+      Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: SupersetworkerTaskRole
       Volumes:
@@ -1660,6 +1671,10 @@ Resources:
     - SupersethomeNFSMountTargetOnSubnetA
     Properties:
       Cluster: !Ref ECSClusterArn
+      CapacityProviderStrategy:
+      - Base: 1
+        CapacityProvider: !Ref CapacityProviderSmall
+        Weight: 1
       PlacementStrategies:
         - Field: memory
           Type: binpack
@@ -1669,7 +1684,6 @@ Resources:
       DeploymentController:
         Type: ECS
       DesiredCount: 1
-      LaunchType: EC2
       NetworkConfiguration:
         AwsvpcConfiguration:
           #AssignPublicIp: ENABLED
@@ -1799,14 +1813,12 @@ Resources:
           SourceVolume: superset_home
         Name: superset-worker-beat
         User: root
-      Cpu: "0.5 vCPU"
       ExecutionRoleArn: !GetAtt SupersetworkerbeatTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset-worker-beat
-      Memory: "2 GB"
+      Memory: "0.5 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
-      - FARGATE
       TaskRoleArn:
         Ref: SupersetworkerbeatTaskRole
       Volumes:
