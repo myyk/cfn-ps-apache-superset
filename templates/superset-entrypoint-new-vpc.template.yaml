@@ -284,6 +284,8 @@ Resources:
           'supersetOnAws' #TODO: parameterize this again, copy from original
         ECSClusterArn:
           Fn::GetAtt: [Cluster, Outputs.ClusterArn]
+        CapacityProvider:
+          Fn::GetAtt: [Cluster, Outputs.CapacityProvider]
         PublicSubnet1ID:
           Fn::GetAtt: [Vpc, Outputs.PublicSubnet1ID]
         PublicSubnet2ID:
