@@ -854,7 +854,7 @@ Resources:
       Cpu: "2 vCPU"
       ExecutionRoleArn: !GetAtt SupersetTaskExecutionRole.Arn
       Family: !Sub ${ClusterName}-superset
-      Memory: "8 GB"
+      Memory: "7 GB"
       NetworkMode: awsvpc
       RequiresCompatibilities:
       - EC2
