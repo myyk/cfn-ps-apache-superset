@@ -771,13 +771,16 @@ Resources:
               Ref: AWS::Region
             awslogs-stream-prefix: !Ref ClusterName
         Name: Superset_ResolvConf_InitContainer
-      - Command:
-        - /app/docker/docker-bootstrap.sh
-        - app
+      - Command: 
+        - "sh"
+        - "-c"
+        - "aws s3 cp s3://superset/superset_config.py /app/superset/superset_config.py && /app/docker/docker-bootstrap.sh app"
         DependsOn:
         - Condition: SUCCESS
           ContainerName: Superset_ResolvConf_InitContainer
         Environment:
+        - Name: SUPERSET_CONFIG
+          Value: /app/superset/superset_config.py
         - Name: COMPOSE_PROJECT_NAME
           Value: superset
         - Name: CYPRESS_CONFIG
